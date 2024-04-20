@@ -1,0 +1,17 @@
+{
+    "dialect": "mysql",
+    "host": "sql.freedb.tech", 
+    "port": 3306, 
+    "database": "freedb_demoDb",
+    "username": "freedb_rootsecdes",
+    "password": "gz!Mx#f@uRW?#8H",
+    "additional": {
+      "timestamps": false
+    },
+    "skipTables": ["cities", "clients"],
+    "caseProp": "l",
+    "caseFile": "p",
+    "singularize": false,
+    "caseModel": "p",
+    "lang": "js"
+}
