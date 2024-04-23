@@ -57,7 +57,7 @@ async function create (req, res) {
             updated_by: req.body.updated_by,
             no_leaks: req.body.no_leaks
         };
-        db.LeakCred.create(leakCred)
+        db.models.LeakCred.create(leakCred)
         .then((data)=>{
             res.status(201).json(data);
         })
@@ -92,7 +92,7 @@ async function create (req, res) {
 // ]
 async function findAll (req, res)  {
     try {
-        await db.LeakCred.findAll()
+        await db.models.LeakCred.findAll()
         .then((data)=>{
             res.status(200).json(data);
         }).catch((error)=>{
