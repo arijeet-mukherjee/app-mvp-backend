@@ -24,7 +24,7 @@ async function initializeDb() {
 
     db.sequelize = sequelize;
 
-    //call initiModels and store in db object
+    //call initModels and store in db object
     db.models = initModels(sequelize);
 
     // sync all models with database
