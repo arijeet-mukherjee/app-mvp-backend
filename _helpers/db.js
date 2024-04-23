@@ -1,5 +1,6 @@
 const config = require('../config.js');
 const { Sequelize, DataTypes } = require('sequelize');
+const initModels = require('../_models/init-models');
 const db = {};
 initializeDb();
 async function initializeDb() {
@@ -12,6 +13,7 @@ async function initializeDb() {
     const sequelize = new Sequelize(database, user, password, {
         host: host,
         dialect: 'mysql',
+        port: port,
         pool: {
             max: 10,
             min: 0,
@@ -22,11 +24,8 @@ async function initializeDb() {
 
     db.sequelize = sequelize;
 
-    //TODO : init models and add them to the exported db object 
-    db.Accounts = require('../_models/Accounts')(sequelize, DataTypes);
-    db.Banners = require('../_models/Banners')(sequelize, DataTypes);
-    db.LeakCred = require('../_models/LeakCred')(sequelize, DataTypes);
-    db.LeakCredDetail = require('../_models/LeakCredDetail')(sequelize, DataTypes);
+    //call initiModels and store in db object
+    db.models = initModels(sequelize);
 
     // sync all models with database
     // if(process.env.NODE_ENV === 'development'){
