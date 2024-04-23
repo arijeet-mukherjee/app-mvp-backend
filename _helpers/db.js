@@ -24,11 +24,11 @@ async function initializeDb() {
 
     //TODO : init models and add them to the exported db object 
     db.Accounts = require('../_models/Accounts')(sequelize, DataTypes);
-    db.AttributeDetails = require('../_models/AttributeDetails')(sequelize, DataTypes);
+    db.AttributeDetail = require('../_models/AttributeDetail')(sequelize, DataTypes);
     db.Attributes = require('../_models/Attributes')(sequelize, DataTypes);
     db.Banners = require('../_models/Banners')(sequelize, DataTypes);
     db.BlogCategories = require('../_models/BlogCategories')(sequelize, DataTypes);
-    db.BlogCategoryDetails = require('../_models/BlogCategoryDetails')(sequelize, DataTypes);
+    db.BlogCategoryDetail = require('../_models/BlogCategoryDetail')(sequelize, DataTypes);
     db.BlogNews = require('../_models/BlogNews')(sequelize, DataTypes);
     db.BlogNewsDetail = require('../_models/BlogNewsDetail')(sequelize, DataTypes);
     db.BusinessSetting = require('../_models/BusinessSetting')(sequelize, DataTypes);
@@ -41,13 +41,13 @@ async function initializeDb() {
     db.CouponOrder = require('../_models/CouponOrder')(sequelize, DataTypes);
     db.CouponSetting = require('../_models/CouponSetting')(sequelize, DataTypes);
     db.Currency = require('../_models/Currency')(sequelize, DataTypes);
-    db.CurrentTheam = require('../_models/CurrentTheam')(sequelize, DataTypes);
+    db.CurrentTheme = require('../_models/CurrentTheme')(sequelize, DataTypes);
     db.CustomCssJs = require('../_models/CustomCssJs')(sequelize, DataTypes);
     db.CustomerAddressBook = require('../_models/CustomerAddressBook')(sequelize, DataTypes);
     db.CustomerOrderAmount = require('../_models/CustomerOrderAmount')(sequelize, DataTypes);
     db.Customers = require('../_models/Customers')(sequelize, DataTypes);
     db.DefaultAccounts = require('../_models/DefaultAccounts')(sequelize, DataTypes);
-    db.demo.model = require('../_models/demo.model')(sequelize, DataTypes);
+    // db.demo.model = require('../_models/demo.model')(sequelize, DataTypes);
     db.DemoSettings = require('../_models/DemoSettings')(sequelize, DataTypes);
     db.EmailTemplateSettings = require('../_models/EmailTemplateSettings')(sequelize, DataTypes);
     db.FailedJobs = require('../_models/FailedJobs')(sequelize, DataTypes);
@@ -55,13 +55,12 @@ async function initializeDb() {
     db.GalleryDetail = require('../_models/GalleryDetail')(sequelize, DataTypes);
     db.GalleryTags = require('../_models/GalleryTags')(sequelize, DataTypes);
     db.HomeBanners = require('../_models/HomeBanners')(sequelize, DataTypes);
-    db.init_models = require('../_models/init-models')(sequelize, DataTypes);
     db.Languages = require('../_models/Languages')(sequelize, DataTypes);    
     db.LeakCred = require('../_models/LeakCred')(sequelize, DataTypes);
-    db.leakcred.model = require('../_models/leakcred.model')(sequelize, DataTypes);
+    // db.leakcred.model = require('../_models/leakcred.model')(sequelize, DataTypes);
     db.LeakCredDetail = require('../_models/LeakCredDetail')(sequelize, DataTypes);
-    db.leakcreddetail.model = require('../_models/leakcreddetail.model')(sequelize, DataTypes);
-    db.Localizaton = require('../_models/Localizaton')(sequelize, DataTypes);
+    // db.leakcreddetail.model = require('../_models/leakcreddetail.model')(sequelize, DataTypes);
+    db.Localizations = require('../_models/Localizations')(sequelize, DataTypes);
     db.Membership = require('../_models/Membership')(sequelize, DataTypes);
     db.MenuBuilders = require('../_models/MenuBuilders')(sequelize, DataTypes);
     db.MenuDetails = require('../_models/MenuDetails')(sequelize, DataTypes);
@@ -76,15 +75,17 @@ async function initializeDb() {
     db.OrderComments = require('../_models/OrderComments')(sequelize, DataTypes);
     db.OrderDetail = require('../_models/OrderDetail')(sequelize, DataTypes);
     db.OrderHistories = require('../_models/OrderHistories')(sequelize, DataTypes);
+    db.OrderNotes = require('../_models/OrderNotes')(sequelize, DataTypes);
     db.Orders = require('../_models/Orders')(sequelize, DataTypes);
     db.PageDetail = require('../_models/PageDetail')(sequelize, DataTypes);
     db.Pages = require('../_models/Pages')(sequelize, DataTypes);
-    db.PasswordReset = require('../_models/PasswordReset')(sequelize, DataTypes);
+    db.PasswordResets = require('../_models/PasswordResets')(sequelize, DataTypes);
+    db.PaymentMethodDescriptions = require('../_models/PaymentMethodDescriptions')(sequelize, DataTypes);
     db.PaymentMethods = require('../_models/PaymentMethods')(sequelize, DataTypes);
     db.PaymentMethodSettings = require('../_models/PaymentMethodSettings')(sequelize, DataTypes);
     db.Permission = require('../_models/Permission')(sequelize, DataTypes);
     db.PermissionRole = require('../_models/PermissionRole')(sequelize, DataTypes);
-    db.PermissionAccessTokens = require('../_models/PermissionAccessTokens')(sequelize, DataTypes);
+    db.PersonalAccessTokens = require('../_models/PersonalAccessTokens')(sequelize, DataTypes);
     db.Points = require('../_models/Points')(sequelize, DataTypes);
     db.ProductAttribute = require('../_models/ProductAttribute')(sequelize, DataTypes);
     db.ProductCategory = require('../_models/ProductCategory')(sequelize, DataTypes);
@@ -95,7 +96,7 @@ async function initializeDb() {
     db.ProductGalleryDetails = require('../_models/ProductGalleryDetails')(sequelize, DataTypes);
     db.ProductReview = require('../_models/ProductReview')(sequelize, DataTypes);
     db.Products = require('../_models/Products')(sequelize, DataTypes);
-    db.ProductsVariation = require('../_models/ProductsVariation')(sequelize, DataTypes);
+    db.ProductVariation = require('../_models/ProductVariation')(sequelize, DataTypes);
     db.Roles = require('../_models/Roles')(sequelize, DataTypes);
     db.Sales = require('../_models/Sales')(sequelize, DataTypes);
     db.Settings = require('../_models/Settings')(sequelize, DataTypes);
@@ -115,7 +116,7 @@ async function initializeDb() {
     db.Transactions = require('../_models/Transactions')(sequelize, DataTypes);
     db.UnitDetail = require('../_models/UnitDetail')(sequelize, DataTypes);
     db.Units = require('../_models/Units')(sequelize, DataTypes);
-    db.UnitRequest = require('../_models/UnitRequest')(sequelize, DataTypes);
+    db.UserRequest = require('../_models/UserRequest')(sequelize, DataTypes);
     db.Users = require('../_models/Users')(sequelize, DataTypes);
     db.VariationDetail = require('../_models/VariationDetail')(sequelize, DataTypes);
     db.Variations = require('../_models/Variations')(sequelize, DataTypes);
