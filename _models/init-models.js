@@ -293,7 +293,7 @@ function initModels(sequelize) {
   OrderHistories.belongsTo(Orders, { as: "order", foreignKey: "order_id"});
   Orders.hasMany(OrderHistories, { as: "order_histories", foreignKey: "order_id"});
   OrderNotes.belongsTo(Orders, { as: "order", foreignKey: "order_id"});
-  Orders.hasMany(OrderNotes, { as: "order_notes", foreignKey: "order_id"});
+  Orders.hasMany(OrderNotes, { as: "OrderNotesAssociation", foreignKey: "order_id"});
   Banners.belongsTo(Pages, { as: "page", foreignKey: "page_id"});
   Pages.hasMany(Banners, { as: "banners", foreignKey: "page_id"});
   PageDetail.belongsTo(Pages, { as: "page", foreignKey: "page_id"});
