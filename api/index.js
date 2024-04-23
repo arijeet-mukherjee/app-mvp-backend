@@ -19,7 +19,11 @@ appRouter.use(errorHandler);
 appRouter.use(bodyParser.json());
 
 appRouter.get('/', async (req, res) => {
-  res.send('Server is running');
+  if (process.env.NODE_ENV === 'development') {
+    res.send('Server is running');
+  } else {
+    res.status(404).send('Not found');
+  }
 });
 
 // ROUTES
