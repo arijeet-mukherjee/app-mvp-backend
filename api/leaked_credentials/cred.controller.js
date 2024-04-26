@@ -1,3 +1,4 @@
+const { Sequelize} = require('sequelize');
 const { db , initializeDb } = require('../../_helpers/db');
 initializeDb();
 
@@ -90,9 +91,35 @@ async function create (req, res) {
 //     },
 //     ...
 // ]
-async function findAll (req, res)  {
+
+
+//This returns total number of leaks per email address.
+const {Op} = Sequelize
+async function leakCounts(req, res){
     try {
-        await db.models.LeakCred.findAll()
+      const count  = await db.models.LeakCred.count({
+        where: {
+          email: {
+            [Op.eq]: req.query.email
+          }
+        },
+      });
+      res.status(200).json({ count });
+    } catch (error) {
+      console.error('Error counting leaked emails:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+//This returns all existing records of user in pagintion method.
+async function findAll (req, res)  {
+    const { page = 1, pageSize = 10 } = req.query;
+    const offset = Number(Number(page) - 1) * Number(pageSize);
+    try {
+        await db.models.LeakCred.findAll({
+                offset,
+                limit: Number(pageSize)
+        })
         .then((data)=>{
             res.status(200).json(data);
         }).catch((error)=>{
@@ -103,4 +130,25 @@ async function findAll (req, res)  {
     }
 }
 
-module.exports = { create, findAll }; // Export the controller functions
+//This returns all existing emails of user in pagintion method.
+async function totalEmails(req, res){
+    const { page = 1, pageSize = 10 } = req.query;
+    const offset = Number(Number(page) - 1) * Number(pageSize);
+
+    try {
+        const emails = await db.models.LeakCred.findAll({
+          attributes: ['email'],
+          group: ['email'],
+          offset,
+          limit: Number(pageSize)
+        });
+    
+        res.json({ emails });
+      } catch (error) {
+        console.error('Error fetching tracked emails:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+}
+
+
+module.exports = { create, findAll, leakCounts, totalEmails }; // Export the controller functions
