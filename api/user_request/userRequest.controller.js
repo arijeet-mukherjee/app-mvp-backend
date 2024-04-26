@@ -1,8 +1,10 @@
 const { parseConnectionUrl } = require('nodemailer/lib/shared');
 const { db, initializeDb } = require('../../_helpers/db');
 const Joi = require('joi');
+const { Op } = require('sequelize');
 initializeDb();
 
+//Create an Entry in User_requests
 async function create(req, res) {
     // Validate request
     if (!req.body) {
@@ -30,8 +32,6 @@ async function create(req, res) {
         //take the max id from db and then increment it by one then create 
         let max_id = await db.models.UserRequest.max('id');
 
-        console.log(max_id);
-
         //Create a userRequest object
         const UserRequest = {
 
@@ -43,7 +43,7 @@ async function create(req, res) {
 
         };
 
-        //console.log(schema.validate(UserRequest))
+        //Request is validated here
         let validatedRequest = schema.validate(UserRequest);
 
         function validate_payload(req_payload, req_type) {
@@ -55,13 +55,12 @@ async function create(req, res) {
                 else {
                     for (let i = 0; i < payload.length; i++) {
 
-                        const email = payload[i];
+                        const email = payload[i].trim();
                         if (!email.toLowerCase()
                             .match(
                                 /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                             )) {
                             return false;
-
                         }
                     }
                     return true;
@@ -83,7 +82,6 @@ async function create(req, res) {
             return;
 
         } else {
-
             res.status(400).json({ message: "Bad request" });
             return;
         }
@@ -93,20 +91,84 @@ async function create(req, res) {
     }
 };
 
+
+//get all User_requests in paginated manner 
 async function getAllUserRequests(req, res) {
 
-    
     try {
-        await db.models.UserRequest.findAll()
-            .then((data) => {
-                res.status(200).json(data);
-            }).catch((error) => {
-                res.status(500).json({ message: error.message });
-            });
+        const { page = 1, pageSize = 2 } = req.query;
+        const offset = (Number(page - 1) * Number(pageSize));
+
+        await db.models.UserRequest.findAll({
+            offset,
+            limit: Number(pageSize),
+
+        }).then((data) => {
+            res.status(200).json(data);
+        }).catch((error) => {
+            res.status(500).json({ message: error.message });
+        });
+
+        return;
+
     } catch (error) {
         res.status(500).json({ message: error.message });
+        return;
     }
 }
 
+//Get User_Requests by condition.
+async function getUserRequestsByCondition(req, res) {
 
-module.exports = { create, getAllUserRequests };
+    const { page = 1, pageSize = 2 } = req.query;
+    const offset = (Number(page - 1) * Number(pageSize));
+
+    // Extract conditions from query parameters
+    const conditions = {};
+    if (req.query.user_id) {
+        conditions.user_id = { [Op.eq]: req.query.user_id };
+    }
+    if (req.query.request_type) {
+        conditions.request_type = { [Op.eq]: req.query.request_type };
+    }
+
+
+    try {
+        const userRequests = await db.models.UserRequest.findAll({
+            offset,
+            limit: Number(pageSize),
+            where: conditions
+        });
+        res.json(userRequests);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching user requests" });
+    }
+}
+
+//Delete the entry from this method
+async function deleteUserRequest(req, res) {
+
+    // Extract conditions from query parameters
+    const conditions = {};
+    if (req.query.id) {
+        conditions.id = { [Op.eq]: req.query.id };
+    }
+    // Add more conditions based on your needs
+    try {
+        const deletedCount = await db.models.UserRequest.destroy({
+            where: conditions,
+        });
+        res.json({ message: `${deletedCount} user requests deleted` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error deleting user requests" });
+    }
+}
+
+module.exports = {
+    create,
+    getAllUserRequests,
+    getUserRequestsByCondition,
+    deleteUserRequest
+};
