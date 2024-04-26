@@ -1,7 +1,7 @@
 const { parseConnectionUrl } = require('nodemailer/lib/shared');
 const { db, initializeDb } = require('../../_helpers/db');
 const Joi = require('joi');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 initializeDb();
 
 //Create an Entry in User_requests
@@ -91,20 +91,24 @@ async function create(req, res) {
     }
 };
 
-
 //get all User_requests in paginated manner 
 async function getAllUserRequests(req, res) {
 
     try {
+
         const { page = 1, pageSize = 2 } = req.query;
         const offset = (Number(page - 1) * Number(pageSize));
+        const count = await db.models.UserRequest.count();
+        const totalPages = Math.ceil(count / pageSize);
+
+        console.log(count, totalPages);
 
         await db.models.UserRequest.findAll({
             offset,
             limit: Number(pageSize),
 
         }).then((data) => {
-            res.status(200).json(data);
+            res.status(200).json({ totalPages, data });
         }).catch((error) => {
             res.status(500).json({ message: error.message });
         });
@@ -132,14 +136,17 @@ async function getUserRequestsByCondition(req, res) {
         conditions.request_type = { [Op.eq]: req.query.request_type };
     }
 
-
     try {
+        const count = await db.models.UserRequest.count({
+            where: conditions
+        });
+        const totalPages = Math.ceil(count / pageSize);
         const userRequests = await db.models.UserRequest.findAll({
             offset,
             limit: Number(pageSize),
             where: conditions
         });
-        res.json(userRequests);
+        res.json({ totalPages, userRequests });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error fetching user requests" });
