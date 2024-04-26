@@ -100,9 +100,7 @@ async function getAllUserRequests(req, res) {
         const offset = (Number(page - 1) * Number(pageSize));
         const count = await db.models.UserRequest.count();
         const totalPages = Math.ceil(count / pageSize);
-
-        console.log(count, totalPages);
-
+        
         await db.models.UserRequest.findAll({
             offset,
             limit: Number(pageSize),
