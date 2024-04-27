@@ -2,6 +2,10 @@ const express = require('express');
 const credRouter = express.Router();
 
 const credController  = require('./cred.controller');
+const credDetailController  = require('./credDetail.controller');
+
+credRouter.get('/getAllCredDetail', credDetailController.getAll);
+credRouter.get('/getConditionalCredDetail', credDetailController.getByCondition);
 
 // Return all the email's details
 credRouter.get('/getAllLeakCredentials', credController.findAll);
