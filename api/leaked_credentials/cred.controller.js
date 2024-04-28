@@ -1,3 +1,4 @@
+const { fetchAllDataInChunks } = require('../../_util');
 const { db , initializeDb } = require('../../_helpers/db');
 initializeDb();
 
