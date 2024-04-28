@@ -11,16 +11,13 @@ async function create(req, res) {
         res.status(400).json({ message: "Content can not be empty!" });
         return;
     }
-
     //Create a new entry in userRequest
     //id is optional (auto increment)
     //user_id is required
     //request_type is required 
     //request_payload is required
     //page_id is required
-
     try {
-
         const schema = Joi.object().keys({
             id: Joi.number().integer(),
             user_id: Joi.number().integer().required(),
@@ -28,10 +25,8 @@ async function create(req, res) {
             request_payload: Joi.string().required(),
             page_id: Joi.number().integer().required()
         });
-
         //take the max id from db and then increment it by one then create 
         let max_id = await db.models.UserRequest.max('id');
-
         //Create a userRequest object
         const UserRequest = {
 
@@ -42,11 +37,9 @@ async function create(req, res) {
             page_id: req.body.page_id
 
         };
-
         //Request is validated here
         let validatedRequest = schema.validate(UserRequest);
-
-        function validate_payload(req_payload, req_type) {
+        async function validate_payload(req_payload, req_type) {
             if (req_type === "tc_check") {
                 return req_payload !== "";
             } else if (req_type === "leaked_check") {
@@ -54,7 +47,6 @@ async function create(req, res) {
                 if (payload && payload.length === 0) return false;
                 else {
                     for (let i = 0; i < payload.length; i++) {
-
                         const email = payload[i].trim();
                         if (!email.toLowerCase()
                             .match(
@@ -66,10 +58,19 @@ async function create(req, res) {
                     return true;
                 }
             }
-        }
-
+        };
+        //code to insert into table after validation
         if (!validatedRequest.error && validate_payload(req.body.request_payload, req.body.request_type)) {
-
+            console.log(req.body.id);
+            const record = await db.models.UserRequest.findOne({
+                where: {
+                    id: req.body.id
+                }
+            });
+            if (record !== null) {
+                res.status(400).json({ message: `id ${req.body.id} already exists` });
+                return;
+            }
             //inserting into DB
             db.models.UserRequest.create(validatedRequest.value)
                 .then((data) => {
@@ -78,9 +79,7 @@ async function create(req, res) {
                 .catch((error) => {
                     res.status(500).json({ message: error.message });
                 });
-
             return;
-
         } else {
             res.status(400).json({ message: "Bad request" });
             return;
@@ -90,17 +89,14 @@ async function create(req, res) {
         return;
     }
 };
-
 //get all User_requests in paginated manner 
 async function getAllUserRequests(req, res) {
-
     try {
-
         const { page = 1, pageSize = 2 } = req.query;
         const offset = (Number(page - 1) * Number(pageSize));
         const count = await db.models.UserRequest.count();
         const totalPages = Math.ceil(count / pageSize);
-        
+
         await db.models.UserRequest.findAll({
             offset,
             limit: Number(pageSize),
@@ -117,14 +113,11 @@ async function getAllUserRequests(req, res) {
         res.status(500).json({ message: error.message });
         return;
     }
-}
-
+};
 //Get User_Requests by condition.
 async function getUserRequestsByCondition(req, res) {
-
     const { page = 1, pageSize = 2 } = req.query;
     const offset = (Number(page - 1) * Number(pageSize));
-
     // Extract conditions from query parameters
     const conditions = {};
     if (req.query.user_id) {
@@ -149,11 +142,9 @@ async function getUserRequestsByCondition(req, res) {
         console.error(error);
         res.status(500).json({ message: "Error fetching user requests" });
     }
-}
-
+};
 //Delete the entry from this method
 async function deleteUserRequest(req, res) {
-
     // Extract conditions from query parameters
     const conditions = {};
     if (req.query.id) {
@@ -161,6 +152,11 @@ async function deleteUserRequest(req, res) {
     }
     // Add more conditions based on your needs
     try {
+        console.log(conditions.length)
+        if (conditions.length === undefined) {
+            res.status(400).json({ message: "There is no id specified to delete" })
+            return;
+        }
         const deletedCount = await db.models.UserRequest.destroy({
             where: conditions,
         });
@@ -169,8 +165,7 @@ async function deleteUserRequest(req, res) {
         console.error(error);
         res.status(500).json({ message: "Error deleting user requests" });
     }
-}
-
+};
 module.exports = {
     create,
     getAllUserRequests,
