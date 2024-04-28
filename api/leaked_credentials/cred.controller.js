@@ -1,3 +1,4 @@
+const { fetchAllDataInChunks } = require('../../_util');
 const { db , initializeDb } = require('../../_helpers/db');
 initializeDb();
 
@@ -92,16 +93,17 @@ async function create (req, res) {
 // ]
 async function findAll (req, res)  {
     try {
-        await db.models.LeakCred.findAll()
-        .then((data)=>{
-            res.status(200).json(data);
-        }).catch((error)=>{
-            res.status(500).json({ message: error.message });
-        });
+        const wss = req.wssManager.wss;
+        let limit = req.query && req.query.limit ? Number(req.query.limit) : 2;
+        let batchSize = req.query && req.query.batchSize ? Number(req.query.batchSize) : 2;
+        const initialData = await db.models.LeakCred.findAll({limit});
+        res.status(200).json(initialData);
+        fetchAllDataInChunks(db.models.LeakCred, wss, limit, batchSize);
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 module.exports = { create, findAll }; // Export the controller functions
     
