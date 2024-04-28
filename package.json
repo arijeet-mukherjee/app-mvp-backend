@@ -25,7 +25,8 @@
     "sequelize": "^6.37.1",
     "sequelize-auto": "^0.8.8",
     "socket.io": "^4.7.5",
-    "swagger-tools": "^0.10.4"
+    "swagger-tools": "^0.10.4",
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
