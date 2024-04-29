@@ -1,7 +1,6 @@
-const { parseConnectionUrl } = require('nodemailer/lib/shared');
 const { db, initializeDb } = require('../../_helpers/db');
 const Joi = require('joi');
-const { Op, where } = require('sequelize');
+const { Op } = require('sequelize');
 initializeDb();
 
 //Create an Entry in User_requests
@@ -39,6 +38,14 @@ async function create(req, res) {
         };
         //Request is validated here
         let validatedRequest = schema.validate(UserRequest);
+        let formatted_emails = "";
+        /**
+ * Validates the request payload.
+ *
+ * @param {string} req_payload - The request payload.
+ * @param {string} req_type - The request type.
+ * @returns {boolean} A boolean indicating whether the payload is valid.
+ */
         async function validate_payload(req_payload, req_type) {
             if (req_type === "tc_check") {
                 return req_payload !== "";
@@ -54,22 +61,28 @@ async function create(req, res) {
                             )) {
                             return false;
                         }
+                        formatted_emails = formatted_emails === "" ? email : formatted_emails + "," + email;
                     }
                     return true;
                 }
-            }
+            } return false;
         };
         //code to insert into table after validation
         if (!validatedRequest.error && validate_payload(req.body.request_payload, req.body.request_type)) {
-            console.log(req.body.id);
-            const record = await db.models.UserRequest.findOne({
-                where: {
-                    id: req.body.id
+
+            if (validatedRequest.value.request_type === "leaked_check") {
+                validatedRequest.value.request_payload = formatted_emails;
+            }
+            if (req.body.id) {
+                const record = await db.models.UserRequest.findOne({
+                    where: {
+                        id: req.body.id
+                    }
+                });
+                if (record !== null) {
+                    res.status(400).json({ message: `id ${req.body.id} already exists` });
+                    return;
                 }
-            });
-            if (record !== null) {
-                res.status(400).json({ message: `id ${req.body.id} already exists` });
-                return;
             }
             //inserting into DB
             db.models.UserRequest.create(validatedRequest.value)
@@ -152,8 +165,7 @@ async function deleteUserRequest(req, res) {
     }
     // Add more conditions based on your needs
     try {
-        console.log(conditions.length)
-        if (conditions.length === undefined) {
+        if (Object.keys(conditions).length === 0) {
             res.status(400).json({ message: "There is no id specified to delete" })
             return;
         }
