@@ -3,7 +3,7 @@ const trainingRouter = express.Router();
 
 const trainingController  = require('./training.controller');
 
-trainingRouter.get('/getAllCategories', trainingController.getAllCategories);
+trainingRouter.get('/getAllCategoriesData', trainingController.getAllCategoriesData);
 trainingRouter.post('/createCategory', trainingController.createCategory);
 trainingRouter.post('/createCategoryDetailById', trainingController.createCategoryDetailById);
 
@@ -12,4 +12,3 @@ trainingRouter.post('/createCategoryDetailById', trainingController.createCatego
 
 
 module.exports = trainingRouter;
-//module.exports = trainingController;

@@ -1,4 +1,6 @@
 const { db, initializeDb } = require('../../_helpers/db');
+const { fetchAllDataInChunks } = require('../../_util');
+
 initializeDb();
 
 //Create an Entry in categories Table
@@ -51,11 +53,11 @@ async function createCategory(req, res) {
                 category_slug: req.body.category_slug,
                 sort_order: req.body.sort_order,
                 created_by: req.body.created_by,
-                updated_by: null,
+                updated_by: req.body.updated_by,
                 deleted_at: null,
                 created_at: new Date(),
-                updated_at: null,
-            };
+                updated_at: new Date(),
+            }
 
             //Create a new Category Details
             const categoryDetailsData = {
@@ -130,29 +132,33 @@ async function createCategoryDetailById(req, res) {
     }
 };
 
-
-async function getAllCategories(req, res) {
+async function getAllCategoriesData(req, res) {
+    let conditions = {};
     try {
         const wss = req.wssManager.wss;
         let limit = req.query && req.query.limit ? Number(req.query.limit) : 2;
         let batchSize = req.query && req.query.batchSize ? Number(req.query.batchSize) : 2;
-        let offset = limit || 0;
+        const id = Number(req.query.id);
+        if(id) {
+            conditions.id = id;
+        }
         const data = await db.models.Categories.findAll({
-            include: [{ model: db.models.CategoryDetail, as: "category_details", limit}]
+            include: [{ model: db.models.CategoryDetail, as: "category_details"}], limit, where: conditions
         });
         res.status(200).json(data);
-        
-
+        const otherProps = {}
+        otherProps['include'] = [{model: db.models.CategoryDetail, as: "category_details"}]
+        fetchAllDataInChunks(db.models.Categories, wss, limit, batchSize, conditions, otherProps)
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 
 module.exports = {
     createCategory,
     createCategoryDetailById,
-    getAllCategories
+    getAllCategoriesData
 };
 
 
