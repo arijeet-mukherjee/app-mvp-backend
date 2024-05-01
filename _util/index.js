@@ -47,4 +47,16 @@ async function fetchAllDataInChunks(dbModel, wss, limit, batch) {
     }
 }
 
-module.exports = { fetchAllDataInChunks };
+async function isEntryPresentForLanguage(model, language_id, conditionProp) {
+    const existinglanguageId = await model.findAll({
+        where: {
+            language_id: language_id,
+            ...conditionProp
+        }
+    }).then(data => {
+        return data
+    })
+    return existinglanguageId.length > 0;
+}
+
+module.exports = { fetchAllDataInChunks, isEntryPresentForLanguage };
