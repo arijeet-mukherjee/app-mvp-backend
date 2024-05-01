@@ -106,3 +106,4 @@ async function findAll (req, res)  {
 };
 
 module.exports = { create, findAll }; // Export the controller functions
+    
