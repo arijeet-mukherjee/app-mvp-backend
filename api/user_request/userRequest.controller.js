@@ -156,7 +156,6 @@ async function deleteUserRequest(req, res) {
         });
         res.json({ message: `${deletedCount} user requests deleted` });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Error deleting user requests" });
     }
 };
