@@ -121,10 +121,10 @@ async function getAllUserRequests(req, res) {
 async function getUserRequestsByCondition(req, res) {
     const conditions = {};
     if (req.query.user_id) {
-        conditions.user_id = { [Op.eq]: req.query.user_id };
+        conditions.user_id = Number(req.query.user_id);
     }
     if (req.query.request_type) {
-        conditions.request_type = { [Op.eq]: req.query.request_type };
+        conditions.request_type = req.query.request_type;
     }
     try {
         const wss = req.wssManager.wss;
@@ -132,7 +132,7 @@ async function getUserRequestsByCondition(req, res) {
         let batchSize = req.query && req.query.batchSize ? Number(req.query.batchSize) : 2;
         const initialData = await db.models.UserRequest.findAll({ limit, where: conditions });
         res.status(200).json(initialData);
-        fetchAllDataInChunks(db.models.UserRequest, wss, limit, batchSize);
+        fetchAllDataInChunks(db.models.UserRequest, wss, limit, batchSize, conditions);
 
     } catch (error) {
         res.status(500).json({ message: error.message });
