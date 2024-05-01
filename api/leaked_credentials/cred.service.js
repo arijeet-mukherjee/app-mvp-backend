@@ -1,7 +1,8 @@
 const express = require('express');
 const credRouter = express.Router();
 
-const credController = require('./cred.controller');
+const credController  = require('./cred.controller');
+credRouter.get('/getTotalLeakCounts', credController.getTotalLeakCounts);
 const user_request_controller = require('../user_request/userRequest.controller');
 //All get Requests here
 credRouter.get('/getAllLeakCredentials', credController.findAll);
