@@ -1,6 +1,7 @@
 const { db, initializeDb } = require('../../_helpers/db');
+const { fetchAllDataInChunks } = require('../../_util/index.js');
 const Joi = require('joi');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 initializeDb();
 
 //Create an Entry in User_requests
@@ -105,33 +106,19 @@ async function create(req, res) {
 //get all User_requests in paginated manner 
 async function getAllUserRequests(req, res) {
     try {
-        const { page = 1, pageSize = 2 } = req.query;
-        const offset = (Number(page - 1) * Number(pageSize));
-        const count = await db.models.UserRequest.count();
-        const totalPages = Math.ceil(count / pageSize);
-
-        await db.models.UserRequest.findAll({
-            offset,
-            limit: Number(pageSize),
-
-        }).then((data) => {
-            res.status(200).json({ totalPages, data });
-        }).catch((error) => {
-            res.status(500).json({ message: error.message });
-        });
-
-        return;
+        const wss = req.wssManager.wss;
+        let limit = req.query && req.query.limit ? Number(req.query.limit) : 2;
+        let batchSize = req.query && req.query.batchSize ? Number(req.query.batchSize) : 2;
+        const initialData = await db.models.UserRequest.findAll({ limit });
+        res.status(200).json(initialData);
+        fetchAllDataInChunks(db.models.UserRequest, wss, limit, batchSize);
 
     } catch (error) {
         res.status(500).json({ message: error.message });
-        return;
     }
 };
 //Get User_Requests by condition.
 async function getUserRequestsByCondition(req, res) {
-    const { page = 1, pageSize = 2 } = req.query;
-    const offset = (Number(page - 1) * Number(pageSize));
-    // Extract conditions from query parameters
     const conditions = {};
     if (req.query.user_id) {
         conditions.user_id = { [Op.eq]: req.query.user_id };
@@ -139,21 +126,16 @@ async function getUserRequestsByCondition(req, res) {
     if (req.query.request_type) {
         conditions.request_type = { [Op.eq]: req.query.request_type };
     }
-
     try {
-        const count = await db.models.UserRequest.count({
-            where: conditions
-        });
-        const totalPages = Math.ceil(count / pageSize);
-        const userRequests = await db.models.UserRequest.findAll({
-            offset,
-            limit: Number(pageSize),
-            where: conditions
-        });
-        res.json({ totalPages, userRequests });
+        const wss = req.wssManager.wss;
+        let limit = req.query && req.query.limit ? Number(req.query.limit) : 2;
+        let batchSize = req.query && req.query.batchSize ? Number(req.query.batchSize) : 2;
+        const initialData = await db.models.UserRequest.findAll({ limit, where: conditions });
+        res.status(200).json(initialData);
+        fetchAllDataInChunks(db.models.UserRequest, wss, limit, batchSize);
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error fetching user requests" });
+        res.status(500).json({ message: error.message });
     }
 };
 //Delete the entry from this method
