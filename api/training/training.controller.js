@@ -300,7 +300,6 @@ async function deleteCategory(req, res) {
     }
 };
 
-
 module.exports = {
     createCategory,
     createCategoryDetailById,
@@ -309,6 +308,3 @@ module.exports = {
     updateCategory,
     deleteCategory
 };
-
-
-
