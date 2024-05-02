@@ -14,9 +14,10 @@ async function createCategory(req, res) {
     //Create a new category
     try {
         const id = req.body.id;
-        const isExistingCategory = id && await db.models.Categories.findOne({ where: { id } }).then((data) => {
-            return data;
-        });
+        const isExistingCategory = id && await db.models.Categories.findOne({ where: { id } })
+            .then((data) => {
+                return data;
+            });
         let max_id = await db.models.CategoryDetail.max('id') || 0;
         console.log(isExistingCategory, "MAX ID");
         //If Category already exist insert only category details
@@ -46,7 +47,10 @@ async function createCategory(req, res) {
                 return res.status(409).json({ error: 'language_id is required' });
             }
 
-            const existinglanguageId = await db.models.CategoryDetail.findOne({ where: { language_id: req.body.language_id, category_id: req.body.id } });
+            const existinglanguageId = await db.models.CategoryDetail.findOne({ where: { language_id: req.body.language_id, category_id: req.body.id } })
+                .then((data) => {
+                    return data;
+                });
             if (existinglanguageId) {
                 return res.status(409).json({ error: 'language already exist for this category' });
             }
@@ -71,7 +75,6 @@ async function createCategory(req, res) {
             return;
         } else {
             //Create a new category
-            console.log("going to else")
             let categoryMaxId = await db.models.Categories.max('id') || 0;
 
             const categoryData = {
@@ -184,6 +187,8 @@ async function getAllCategoriesData(req, res) {
         }
         const data = await db.models.Categories.findAll({
             include: [{ model: db.models.CategoryDetail, as: "category_details" }], limit, where: conditions
+        }).then((data) => {
+            return data;
         });
         res.status(200).json(data);
         const otherProps = {}
