@@ -1,6 +1,11 @@
 const { fetchAllDataInChunks } = require('../../_util');
-const { db, initializeDb } = require('../../_helpers/db');
+const { db , initializeDb } = require('../../_helpers/db');
+const { Sequelize } = require("sequelize");
+const { Op } = Sequelize;
+
 initializeDb();
+
+
 
 //Write all the controller functions and export them
 /**
@@ -91,7 +96,42 @@ async function create(req, res) {
 //     },
 //     ...
 // ]
-async function findAll(req, res) {
+
+async function getTotalLeakCounts(req, res){    
+    try{
+        const leaked_entry = await db.models.LeakCred.findOne({
+            where:{
+                email:{
+                    [Op.eq] : req.query.email
+                }
+            }           
+        });
+       if(!leaked_entry || leaked_entry === null){       
+            res.status(200).json({});
+            return;
+       }
+       else{
+           const lc_id = leaked_entry.id;
+           const conditions = {};
+           conditions.lc_id = { [Op.eq] : lc_id}
+           const leaked_details_count = await db.models.LeakCredDetail.count({
+               where: conditions      
+
+            })
+            res.status(200).json({ leaked_details_count});
+            return;
+        }
+    }
+    catch(error){
+        res.status(500).json({ error: "Internal server error" });
+        return;
+        }   
+};
+
+
+
+
+async function findAll (req, res)  {
     try {
         const wss = req.wssManager.wss;
         let limit = req.query && req.query.limit ? Number(req.query.limit) : 2;
@@ -105,4 +145,4 @@ async function findAll(req, res) {
     }
 };
 
-module.exports = { create, findAll }; // Export the controller functions
+module.exports = { create, findAll, getTotalLeakCounts}; // Export the controller functions

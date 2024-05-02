@@ -25,12 +25,11 @@
 */
 const WebSocket = require('ws');
 //Fetch all data from a database model in chunks and send it to all WebSocket clients
-async function fetchAllDataInChunks(dbModel, wss, limit, batch) {
+async function fetchAllDataInChunks(dbModel, wss, limit, batch, conditions) {
     const batchSize = batch || 2; // Adjust batch size as needed
     let offset = limit || 0;
-
     while (true) {
-        const data = await dbModel.findAll({ offset, limit: batchSize });
+        const data = await dbModel.findAll({ offset, limit: batchSize, where: conditions ? conditions : {} });
 
         // Send data to all WebSocket clients
         wss.clients.forEach((client) => {
