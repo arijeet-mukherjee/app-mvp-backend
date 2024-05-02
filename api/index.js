@@ -10,7 +10,9 @@ const paymentRouter = require('./subscription/payment.service');
 const termsRouter = require('./terms_and_conditions/tc.service');
 const credRouter = require('./leaked_credentials/cred.service');
 const helpdeskRouter = require('./helpdesk/helpdesk.service');
+const pagesRouter = require('./pages/pages.service');
 const leakedCredDetailsRouter = require('./leaked_credentials/cred_detail.service');
+
 
 //IMPORT MIDDLEWARES
 const errorHandler = require('../_middleware/error-handler');
@@ -34,6 +36,7 @@ appRouter.use('/payments', paymentRouter);
 appRouter.use('/terms', termsRouter);
 appRouter.use('/leakCredentials', credRouter);
 appRouter.use('/helpdesk', helpdeskRouter);
+appRouter.use('/pages', pagesRouter);
 appRouter.use('/leakCredentialDetails', leakedCredDetailsRouter);
 
 module.exports = { appRouter };
