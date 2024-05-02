@@ -2,7 +2,6 @@ const { fetchAllDataInChunks } = require('../../_util');
 const { db , initializeDb } = require('../../_helpers/db');
 const { Sequelize } = require("sequelize");
 const { Op } = Sequelize;
-
 initializeDb();
 
 
@@ -45,9 +44,9 @@ initializeDb();
         "no_leaks": 5
     }'
  */
-async function create(req, res) {
+async function create (req, res) {
     // Validate request
-    if (!req.body) {
+    if(!req.body){
         res.status(400).json({ message: "Content can not be empty!" });
         return;
     }
@@ -64,12 +63,12 @@ async function create(req, res) {
             no_leaks: req.body.no_leaks
         };
         db.models.LeakCred.create(leakCred)
-            .then((data) => {
-                res.status(201).json(data);
-            })
-            .catch((error) => {
-                res.status(500).json({ message: error.message });
-            });
+        .then((data)=>{
+            res.status(201).json(data);
+        })
+        .catch((error)=>{
+            res.status(500).json({ message: error.message });
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
         return;
@@ -136,7 +135,7 @@ async function findAll (req, res)  {
         const wss = req.wssManager.wss;
         let limit = req.query && req.query.limit ? Number(req.query.limit) : 2;
         let batchSize = req.query && req.query.batchSize ? Number(req.query.batchSize) : 2;
-        const initialData = await db.models.LeakCred.findAll({ limit });
+        const initialData = await db.models.LeakCred.findAll({limit});
         res.status(200).json(initialData);
         fetchAllDataInChunks(db.models.LeakCred, wss, limit, batchSize);
 
