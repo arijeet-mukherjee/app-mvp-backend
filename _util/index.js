@@ -55,7 +55,7 @@ async function isEntryPresentForLanguage(model, language_id, conditionProp) {
     }).then(data => {
         return data
     })
-    return existinglanguageId.length > 0;
+    return existinglanguageId !== null;
 }
 
 module.exports = { fetchAllDataInChunks, isEntryPresentForLanguage };
