@@ -10,7 +10,7 @@ const { appRouter } = require('./api/index');
 
 require('dotenv').config();
 
-app.use(cors({ origin: "*" }));
+app.use(cors({origin : "*"}));
 
 app.use((req, res, next) => {
     req.wssManager = wssManager;
