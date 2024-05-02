@@ -48,7 +48,7 @@ async function fetchAllDataInChunks(dbModel, wss, limit, batch) {
 }
 
 async function isEntryPresentForLanguage(model, language_id, conditionProp) {
-    const existinglanguageId = await model.findAll({
+    const existinglanguageId = await model.findOne({
         where: {
             language_id: language_id,
             ...conditionProp
