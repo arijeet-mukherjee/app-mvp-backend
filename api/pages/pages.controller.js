@@ -11,7 +11,7 @@ async function getAllPages(req, res) {
             });
 
     } catch (err) {
-        res.status(500).send({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -59,7 +59,7 @@ async function createPage(req, res) {
     }
 
     try {
-        const id = await db.models.Pages.max('id').then(data => data ? data + 1 : 1).catch((error) => res.status(500).send(error));
+        const id = await db.models.Pages.max('id').then(data => data ? data + 1 : 1).catch((error) => res.status(500).json(error));
         const slug = req.body.slug.typeOf === 'string' ? req.body.slug : req.body.slug.toString();
         const created_by = req.body.created_by.typeOf === 'number' ? req.body.created_by : parseInt(req.body.created_by);
         const date = new Date();
@@ -79,9 +79,9 @@ async function createPage(req, res) {
                 res.status(200).json(data)
                 return;
             })
-            .catch((error) => res.status(500).send(error));
+            .catch((error) => res.status(500).json(error));
     } catch (error) {
-        res.status(500).send({ error: error.message });
+        res.status(500).json({ error: error.message });
         return;
     }
 
@@ -98,7 +98,7 @@ async function createPageDetails(req, res) {
             return;
         }
 
-        const id = await db.models.PageDetail.max('id').then(data => data ? data + 1 : 1).catch((error) => res.status(500).send(error));
+        const id = await db.models.PageDetail.max('id').then(data => data ? data + 1 : 1).catch((error) => res.status(500).json(error));
         const page_type = req.body.page_type.typeOf === 'string' ? req.body.page_type : req.body.page_type.toString();
         const title = req.body.title.typeOf === 'string' ? req.body.title : req.body.title.toString();
         const description = req.body.description.typeOf === 'string' ? req.body.description : req.body.description.toString();
@@ -122,9 +122,9 @@ async function createPageDetails(req, res) {
                 res.status(200).json(data);
                 return;
             })
-            .catch((error) => res.status(500).send(error));
+            .catch((error) => res.status(500).json(error));
     } catch (error) {
-        res.status(500).send({ error: error.message });
+        res.status(500).json({ error: error.message });
         return;
     }
 }
@@ -182,12 +182,12 @@ async function updatePageDetails(req, res) {
                     }
                     return;
                 })
-                .catch((error) => res.status(500).send(error));
+                .catch((error) => res.status(500).json(error));
         })
-            .catch((error) => res.status(500).send(error));
+            .catch((error) => res.status(500).json(error));
 
     } catch (error) {
-        res.status(500).send({ error: error.message });
+        res.status(500).json({ error: error.message });
         return;
     }
 }
