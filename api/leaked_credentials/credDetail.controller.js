@@ -35,7 +35,7 @@ async function getByCondition(req, res){
       });
 
       res.status(200).json({ all_leaked_cred_details });
-      fetchAllDataInChunks(db.models.LeakCredDetail, wss, limit, batchSize, condition);          
+      fetchAllDataInChunks(db.models.LeakCredDetail, wss, limit, batchSize, condition, undefined, "getAllLeakedCredDetailsByCondition");          
 
     } catch (error) {
       console.error("Error featching leaked emails:", error);

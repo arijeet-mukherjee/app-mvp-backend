@@ -25,24 +25,25 @@
 */
 const WebSocket = require('ws');
 //Fetch all data from a database model in chunks and send it to all WebSocket clients
-async function fetchAllDataInChunks(dbModel, wss, limit, batch, conditions, otherProps) {
+async function fetchAllDataInChunks(dbModel, wss, limit, batch, conditions, otherProps, serviceIdentifier) {
     const batchSize = batch || 2; // Adjust batch size as needed
     let offset = limit || 0;
     while (true) {
         const sequelizeQueryObject = { offset, limit: batchSize, where: conditions ? conditions : {}, ...otherProps}
         const data = await dbModel.findAll(sequelizeQueryObject);
-
+ 
         // Send data to all WebSocket clients
         wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(data));
+                // Include service identifier in the data sent to the clients
+                client.send(JSON.stringify({ service: serviceIdentifier, data }));
             }
         });
-
+ 
         if (data.length < batchSize) {
             break; // No more data available
         }
-
+ 
         offset += batchSize;
     }
 }
@@ -58,5 +59,7 @@ async function isEntryPresentForLanguage(model, language_id, conditionProp) {
     })
     return existinglanguageId;
 }
+
+
 
 module.exports = { fetchAllDataInChunks, isEntryPresentForLanguage };

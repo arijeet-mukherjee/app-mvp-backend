@@ -111,7 +111,7 @@ async function getAllUserRequests(req, res) {
         let batchSize = req.query && req.query.batchSize ? Number(req.query.batchSize) : 2;
         const initialData = await db.models.UserRequest.findAll({ limit });
         res.status(200).json(initialData);
-        fetchAllDataInChunks(db.models.UserRequest, wss, limit, batchSize);
+        fetchAllDataInChunks(db.models.UserRequest, wss, limit, batchSize, undefined, undefined, "getUserRequests");
 
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -132,7 +132,7 @@ async function getUserRequestsByCondition(req, res) {
         let batchSize = req.query && req.query.batchSize ? Number(req.query.batchSize) : 2;
         const initialData = await db.models.UserRequest.findAll({ limit, where: conditions });
         res.status(200).json(initialData);
-        fetchAllDataInChunks(db.models.UserRequest, wss, limit, batchSize, conditions);
+        fetchAllDataInChunks(db.models.UserRequest, wss, limit, batchSize, conditions, undefined, "getUserRequestsByCondition");
 
     } catch (error) {
         res.status(500).json({ message: error.message });
