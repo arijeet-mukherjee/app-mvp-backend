@@ -1,7 +1,7 @@
 const { func } = require('joi');
 const { db, initializeDb } = require('../../_helpers/db');
 const { fetchAllDataInChunks } = require('../../_util');
-
+const { isEntryPresentForLanguage } = require('../../_util/index');
 initializeDb();
 
 //Create an Entry in categories Table
@@ -18,8 +18,8 @@ async function createCategory(req, res) {
             .then((data) => {
                 return data;
             });
-        let max_id = await db.models.CategoryDetail.max('id') || 0;
-        console.log(isExistingCategory, "MAX ID");
+        let categoryDetailMaxId = await db.models.CategoryDetail.max('id') || 0;
+
         //If Category already exist insert only category details
         if (isExistingCategory) {
 
@@ -37,7 +37,7 @@ async function createCategory(req, res) {
             }
 
             const categoryDetailsData = {
-                id: max_id + 1,
+                id: categoryDetailMaxId + 1,
                 category_name: req.body.category_name,
                 language_id: req.body.language_id,
                 description: req.body.description,
@@ -47,12 +47,9 @@ async function createCategory(req, res) {
                 return res.status(409).json({ error: 'language_id is required' });
             }
 
-            const existinglanguageId = await db.models.CategoryDetail.findOne({ where: { language_id: req.body.language_id, category_id: req.body.id } })
-                .then((data) => {
-                    return data;
-                });
-            if (existinglanguageId) {
-                return res.status(409).json({ error: 'language already exist for this category' });
+            if (await isEntryPresentForLanguage(db.models.CategoryDetail, req.body.language_id, { category_id: req.body.id })) {
+                res.status(409).json({ message: "language entry exists for this Category" });
+                return;
             }
 
             const response = {}
@@ -93,7 +90,7 @@ async function createCategory(req, res) {
 
             //Create a new Category Details
             const categoryDetailsData = {
-                id: max_id + 1,
+                id: categoryDetailMaxId + 1,
                 category_name: req.body.category_name,
                 language_id: req.body.language_id,
                 description: req.body.description,
@@ -104,12 +101,9 @@ async function createCategory(req, res) {
                 return res.status(409).json({ error: 'language_id is required' });
             }
 
-            console.log(categoryMaxId, max_id, "MAX ID");
-            const existinglanguageId = await db.models.CategoryDetail.findOne({ where: { language_id: req.body.language_id, category_id: (req.body.id || categoryMaxId + 1) } }).then((data) => {
-                return data;
-            });
-            if (existinglanguageId) {
-                return res.status(409).json({ error: 'language already exist for this category' });
+            if (await isEntryPresentForLanguage(db.models.CategoryDetail, req.body.language_id, { category_id: (req.body.id || categoryMaxId + 1) })) {
+                res.status(409).json({ message: "language entry exists for this Category" });
+                return;
             }
 
             const response = {}
@@ -135,14 +129,15 @@ async function createCategory(req, res) {
 
 async function createCategoryDetailById(req, res) {
     const id = Number(req.query.id);
-    const isExistingCategory = db.models.Categories.findOne({ where: { id } }).then((data) => {
-        return data;
-    });
+    const isExistingCategory = await db.models.Categories.findOne({ where: { id } })
+        .then((data) => {
+            return data;
+        });
     //If Category already exist insert only category details
     if (isExistingCategory) {
-        let max_id = await db.models.CategoryDetail.max('id') || 0;
+        let categoryDetailMaxId = await db.models.CategoryDetail.max('id') || 0;
         const categoryDetailsData = {
-            id: max_id + 1,
+            id: categoryDetailMaxId + 1,
             category_name: req.body.category_name,
             language_id: req.body.language_id,
             description: req.body.description,
@@ -153,12 +148,9 @@ async function createCategoryDetailById(req, res) {
             return res.status(409).json({ error: 'language_id is required' });
         }
 
-        const existinglanguageId = await db.models.CategoryDetail.findOne({ where: { language_id: req.body.language_id, category_id: id } })
-            .then((data) => {
-                return data;
-            });
-        if (existinglanguageId) {
-            return res.status(409).json({ error: 'language already exist for this category' });
+        if (await isEntryPresentForLanguage(db.models.CategoryDetail, req.body.language_id, { category_id: id })) {
+            res.status(409).json({ message: "language entry exists for this Category" });
+            return;
         }
 
         db.models.CategoryDetail.create(categoryDetailsData)
@@ -212,6 +204,16 @@ async function updateCategoryDetail(req, res) {
             return res.status(404).json({ error: 'Record not found' });
         }
 
+        const isExistingCategory = await db.models.Categories.findOne({ where: { id: req.body.category_id } })
+            .then((data) => {
+                return data;
+            })
+
+        if (!isExistingCategory) {
+            res.status(409).json({ message: "Category dose not exist" });
+            return;
+        }
+
         const categoryDetailsData = {
             category_name: req.body.category_name,
             language_id: req.body.language_id,
@@ -219,32 +221,87 @@ async function updateCategoryDetail(req, res) {
             category_id: req.body.category_id
         }
 
-        const isExistingLanguageId = await db.models.CategoryDetail.findAll({ where: { language_id: req.body.language_id, category_id: req.body.category_id } })
-            .then((data) => {
-                return data;
-            });
-
-        if (isExistingLanguageId.length > 1) {
-            return res.status(409).json({ error: 'language already exist for this category' });
+        if (await isEntryPresentForLanguage(db.models.CategoryDetail, req.body.language_id, { category_id: req.body.category_id })) {
+            res.status(409).json({ message: "language entry exists for this Category" });
+            return;
         }
 
         // Update the record with the new data
         await db.models.CategoryDetail.update(categoryDetailsData, { where: { id }, })
-            .then((data) => {
-                res.status(201).json(data);
+            .then(async (data) => {
+                if (data[0] === 1) {
+                    await db.models.CategoryDetail.findOne(
+                        {
+                            where: {
+                                id
+                            }
+                        }
+                    ).then((data) => {
+                        res.status(200).json(data);
+                        return;
+                    })
+                }
+                return;
             })
-            .catch((error) => {
-                res.status(500).json({ message: error.message });
-            });
+            .catch((error) => res.status(500).json(error));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
+async function updateCategoryDetailByCategoryIdAndLanguageId(req, res) {
+
+    try {
+        const category_id = Number(req.query.category_id);
+        const language_id = Number(req.query.language_id);
+
+        // Find the record by ID
+        const record = await isEntryPresentForLanguage(db.models.CategoryDetail, language_id, { category_id: category_id })
+            .then((data) => {
+                return data;
+            })
+        if (!record) {
+            res.status(409).json({ message: "Category or language dose not exist" });
+            return;
+        }
+
+
+        const categoryDetailsData = {
+            category_name: req.body.category_name,
+            description: req.body.description
+        }
+
+        // Update the record with the new data
+        await db.models.CategoryDetail.update(categoryDetailsData, { where: { language_id, category_id }, })
+            .then(async (data) => {
+                if (data[0] === 1) {
+                    
+                    await db.models.CategoryDetail.findOne(
+                        {
+                            where: {
+                                language_id,
+                                category_id
+                            }
+                        }
+                    ).then((data) => {
+                        res.status(200).json(data);
+                        return;
+                    })
+                }
+                return;
+            })
+            .catch((error) => res.status(500).json(error));
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
 async function updateCategory(req, res) {
     const id = Number(req.query.id);
-    console.log(id);
     try {
         // Find the record by ID
         const record = await db.models.Categories.findByPk(id)
@@ -268,17 +325,28 @@ async function updateCategory(req, res) {
 
         // Update the record with the new data
         await db.models.Categories.update(categoryData, { where: { id }, })
-            .then((data) => {
-                res.status(201).json(data);
+            .then(async (data) => {
+                if (data[0] === 1) {
+                    await db.models.Categories.findOne(
+                        {
+                            where: {
+                                id: id
+                            }
+                        }
+                    ).then((data) => {
+                        res.status(200).json(data);
+                        return;
+                    })
+                }
+                return;
             })
-            .catch((error) => {
-                res.status(500).json({ message: error.message });
-            });
+            .catch((error) => res.status(500).json(error));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 async function deleteCategory(req, res) {
     // Extract conditions from query parameters
@@ -305,6 +373,7 @@ module.exports = {
     createCategoryDetailById,
     getAllCategoriesData,
     updateCategoryDetail,
+    updateCategoryDetailByCategoryIdAndLanguageId,
     updateCategory,
     deleteCategory
 };

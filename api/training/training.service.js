@@ -7,6 +7,7 @@ trainingRouter.get('/getAllCategoriesData', trainingController.getAllCategoriesD
 trainingRouter.post('/createCategory', trainingController.createCategory);
 trainingRouter.post('/createCategoryDetailById', trainingController.createCategoryDetailById);
 trainingRouter.put('/updateCategoryDetail', trainingController.updateCategoryDetail);
+trainingRouter.put('/updateCategoryDetailByCategoryIdAndLanguageId', trainingController.updateCategoryDetailByCategoryIdAndLanguageId);
 trainingRouter.patch('/updateCategory', trainingController.updateCategory);
 trainingRouter.delete('/deleteCategory', trainingController.deleteCategory);
 
