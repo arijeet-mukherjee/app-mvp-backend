@@ -5,7 +5,7 @@ const appRouter = express.Router();
 
 //IMPORT SERVICES
 const authRouter = require('./auth/auth.service');
-const tutorialRouter = require('./tutorial/tutorial.service');
+const trainingRouter = require('./training/training.service');
 const paymentRouter = require('./subscription/payment.service');
 const termsRouter = require('./terms_and_conditions/tc.service');
 const credRouter = require('./leaked_credentials/cred.service');
@@ -31,7 +31,7 @@ appRouter.get('/', async (req, res) => {
 
 // ROUTES
 appRouter.use('/auth', authRouter);
-appRouter.use('/tutorials', tutorialRouter);
+appRouter.use('/trainings', trainingRouter);
 appRouter.use('/payments', paymentRouter);
 appRouter.use('/terms', termsRouter);
 appRouter.use('/leakCredentials', credRouter);
