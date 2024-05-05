@@ -185,7 +185,7 @@ async function getAllCategoriesData(req, res) {
         res.status(200).json(data);
         const otherProps = {}
         otherProps['include'] = [{ model: db.models.CategoryDetail, as: "category_details" }]
-        fetchAllDataInChunks(db.models.Categories, wss, limit, batchSize, conditions, otherProps)
+        fetchAllDataInChunks(db.models.Categories, wss, limit, batchSize, conditions, otherProps, "getAllCategoriesData")
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

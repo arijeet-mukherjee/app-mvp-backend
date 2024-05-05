@@ -3,6 +3,6 @@ const credDetailRouter = express.Router();
 
 const credDetailController  = require('./credDetail.controller');
 
-credDetailRouter.get('/getByCondition', credDetailController.getByCondition);
+credDetailRouter.get('/getAllLeakedCredDetailsByCondition', credDetailController.getByCondition);
 
 module.exports = credDetailRouter;

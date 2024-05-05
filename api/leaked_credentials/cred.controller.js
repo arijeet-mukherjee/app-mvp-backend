@@ -137,7 +137,7 @@ async function findAll (req, res)  {
         let batchSize = req.query && req.query.batchSize ? Number(req.query.batchSize) : 2;
         const initialData = await db.models.LeakCred.findAll({limit});
         res.status(200).json(initialData);
-        fetchAllDataInChunks(db.models.LeakCred, wss, limit, batchSize);
+        fetchAllDataInChunks(db.models.LeakCred, wss, limit, batchSize, undefined, undefined, "getAllLeakCredentials");
 
     } catch (error) {
         res.status(500).json({ message: error.message });
