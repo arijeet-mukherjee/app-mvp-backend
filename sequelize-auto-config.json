@@ -3,8 +3,8 @@
     "host": "sql.freedb.tech", 
     "port": 3306, 
     "database": "freedb_demoDb",
-    "username": "freedb_rootsecdes",
-    "password": "gz!Mx#f@uRW?#8H",
+    "username": "freedb_rootsecdesk",
+    "password": "e2hZ5mZdF6be6$*",
     "additional": {
       "timestamps": false
     },

@@ -11,7 +11,7 @@ async function getAllPages(req, res) {
             });
 
     } catch (err) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: err.message });
     }
 };
 

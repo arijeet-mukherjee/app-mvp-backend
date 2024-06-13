@@ -12,6 +12,7 @@ const credRouter = require('./leaked_credentials/cred.service');
 const helpdeskRouter = require('./helpdesk/helpdesk.service');
 const pagesRouter = require('./pages/pages.service');
 const leakedCredDetailsRouter = require('./leaked_credentials/cred_detail.service');
+const newsletterRouter = require('./newsletter/newsletter.service');
 
 
 //IMPORT MIDDLEWARES
@@ -37,6 +38,7 @@ appRouter.use('/terms', termsRouter);
 appRouter.use('/leakCredentials', credRouter);
 appRouter.use('/helpdesk', helpdeskRouter);
 appRouter.use('/pages', pagesRouter);
+appRouter.use('/newsletter', newsletterRouter);
 appRouter.use('/leakCredentialDetails', leakedCredDetailsRouter);
 
 module.exports = { appRouter };
