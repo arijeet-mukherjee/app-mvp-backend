@@ -4,10 +4,10 @@ require('dotenv').config();
 const config = {
     "database": {
         "host": `${process.env.DB_HOST || "localhost"}`,
-        "port": `${ process.env.DB_PORT || 3306 }`,
+        "port": `${process.env.DB_PORT || 3306}`,
         "user": `${process.env.DB_USER || "root"}`,
-        "password": `${"gz!Mx#f@uRW?#8H"}`,
+        "password": `${"e2hZ5mZdF6be6$*"}`,
         "database": `${process.env.DB_NAME || "mydb"}`
-    } 
+    }
 };
 module.exports = config;

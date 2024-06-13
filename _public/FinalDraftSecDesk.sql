@@ -587,7 +587,12 @@ CREATE TABLE `newsletter` (
   `status` ENUM ('Enable', 'Disable') NOT NULL,
   `mailchip_api` varchar(191) NOT NULL,
   `mailchip_id` varchar(191) NOT NULL,
-  `gallery_id` bigint(20) NOT NULL
+  `gallery_id` bigint(20) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `firstName` VARCHAR(100),
+  `lastName` VARCHAR(100),
+  `subscribedOn` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `subscriptionUrl` VARCHAR(1024)
 );
 
 CREATE TABLE `oauth_access_tokens` (
@@ -1157,6 +1162,8 @@ CREATE TABLE `leak_cred_detail` (
   `updated_by` bigint(20) DEFAULT null,
   `is_Fixed` ENUM ('yes', 'no') NOT NULL DEFAULT 'no'
 );
+
+
 
 ALTER TABLE `leak_cred` ADD CONSTRAINT `leak_cred_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);
 ALTER TABLE `leak_cred_detail` ADD CONSTRAINT `leak_cred_detail_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);

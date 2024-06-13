@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   return sequelize.define('Newsletter', {
     id: {
       type: DataTypes.BIGINT,
@@ -7,24 +7,45 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     status: {
-      type: DataTypes.ENUM('Enable','Disable'),
+      type: DataTypes.ENUM('Enable', 'Disable'),
       allowNull: false
     },
     mailchip_api: {
       type: DataTypes.STRING(191),
-      allowNull: false
+      allowNull: true
     },
     mailchip_id: {
       type: DataTypes.STRING(191),
-      allowNull: false
+      allowNull: true
     },
     gallery_id: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'gallery',
         key: 'id'
       }
+    },
+    email: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
+    firstName: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    lastName: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    subscribedOn: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
+    },
+    subscriptionUrl: {
+      type: DataTypes.STRING(1024),
+      allowNull: true
     }
   }, {
     sequelize,
